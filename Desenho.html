@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desenho com o Dedo</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    canvas {
+      touch-action: none;
+      background-color: #fff;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<script>
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
+  // Redimensionar o canvas para a tela inteira
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener("resize", resizeCanvas);
+
+  let drawing = false;
+
+  function getPos(evt) {
+    if (evt.touches) {
+      return {
+        x: evt.touches[0].clientX,
+        y: evt.touches[0].clientY
+      };
+    } else {
+      return {
+        x: evt.clientX,
+        y: evt.clientY
+      };
+    }
+  }
+
+  function startDrawing(evt) {
+    drawing = true;
+    const pos = getPos(evt);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+  }
+
+  function draw(evt) {
+    if (!drawing) return;
+    evt.preventDefault();
+    const pos = getPos(evt);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.strokeStyle = "blue";
+    ctx.lineWidth = 4;
+    ctx.lineCap = "round";
+    ctx.stroke();
+  }
+
+  function stopDrawing() {
+    drawing = false;
+    ctx.closePath();
+  }
+
+  // Eventos para mouse
+  canvas.addEventListener("mousedown", startDrawing);
+  canvas.addEventListener("mousemove", draw);
+  canvas.addEventListener("mouseup", stopDrawing);
+  canvas.addEventListener("mouseout", stopDrawing);
+
+  // Eventos para toque (dedo)
+  canvas.addEventListener("touchstart", startDrawing);
+  canvas.addEventListener("touchmove", draw);
+  canvas.addEventListener("touchend", stopDrawing);
+</script>
+
+</body>
+</html>
